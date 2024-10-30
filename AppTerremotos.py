@@ -32,22 +32,28 @@ def obtener_datos():
         texto_resultado.insert(tk.END, f"Error al obtener los datos. Código de estado: {response.status_code}\n")
 
 def mostrar_datos(datos):
-    texto_resultado.delete(1.0, tk.END)  # Limpiar el area de texto
-    if not datos['features']:  # Verificar si features está vacío, es decir si no hay datos de esa consulta
+    texto_resultado.delete(1.0, tk.END)  # Limpiar el área de texto
+    if not datos['features']:  # Verificar si features está vacío
         texto_resultado.insert(tk.END, "No hay resultados acerca de esta consulta. Puede generar otra consulta si lo desea.\n")
         return  # Salir de la función si no hay datos
     
-    # BUsca en cada evento
+    # Encabezados de la tabla
+    encabezados = f"{'Magnitud':<15} | {'Lugar':<70} | {'  Tiempo':<30}\n"
+    texto_resultado.insert(tk.END, encabezados)
+    texto_resultado.insert(tk.END, '-' * len(encabezados) + '\n')  # Línea de separación
+
+    # Buscar en cada evento
     for evento in datos['features']:
         magnitud = evento['properties']['mag']
         lugar = evento['properties']['place']
         tiempo = evento['properties']['time']
         
-        # Conviete el tiempo a un formato aceptable
+        # Convierte el tiempo a un formato legible
         tiempo_legible = convertir_tiempo(tiempo)
 
-        # Mostrar los datos en formato separado
-        texto_resultado.insert(tk.END, f"Magnitud: {magnitud}\nLugar: {lugar}\nTiempo: {tiempo_legible}\n\n")
+        # Mostrar los datos en formato de tabla
+        texto_resultado.insert(tk.END, f"{magnitud:<19}  {lugar:<65}  {tiempo_legible:<30}\n")
+        texto_resultado.insert(tk.END, '-' * len(encabezados) + '\n')  # Línea de separación
 
 def convertir_tiempo(tiempo_ms):
     return datetime.fromtimestamp(tiempo_ms / 1000).strftime('%Y-%m-%d %H:%M:%S')
